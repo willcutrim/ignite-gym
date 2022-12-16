@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Center, ScrollView, VStack, Skeleton, Text, Heading } from 'native-base';
-
+import * as ImagePicker from 'expo-image-picker';
 
 import { ScreenHeader } from '@components/ScreenHeader';
 import { UserPhoto } from '@components/UserPhoto';
@@ -13,6 +13,21 @@ const PHOT0_SIZE = 33;
 export function Profile(){
 
     const [ photoIsLoading, setPhotoIsLoading ] = useState(false);
+    const [ userPhoto, setUserPhoto] = useState('https://github.com/willcutrim.png');
+
+    async function handleUserPhotoSelect(){
+        const photoSelected = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            quality: 1,
+            aspect: [4, 4],
+            allowsEditing: true,
+        });
+
+        if(!photoSelected.canceled){
+            setUserPhoto(photoSelected.assets[0].uri);
+        }
+
+    }
 
     return(
         <VStack flex={1}>
@@ -30,12 +45,12 @@ export function Profile(){
                             />
                         :
                             <UserPhoto
-                                source={{ uri: 'https://github.com/willcutrim.png' }}
+                                source={{ uri: userPhoto }}
                                 size={PHOT0_SIZE} 
                                 alt="imagem de perfil"
                             />
                     }
-                <TouchableOpacity>
+                <TouchableOpacity onPress={handleUserPhotoSelect}>
                     <Text color="green.500" fontWeight="bold" fontSize="md" mt={2} mb={8}>
                         Alterar foto
                     </Text>
