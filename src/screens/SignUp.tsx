@@ -2,6 +2,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { VStack, Image, Text, Center, Heading, ScrollView } from 'native-base';
 import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
 import LogoSvg from '@assets/logo.svg';
 import BackgroundImg from '@assets/background.png';
@@ -16,10 +18,19 @@ type FormDataProps = {
     confirmar_senha: string;
 }
 
+const signUpSchema = yup.object({
+    name: yup.string().required('Informe o nome.'),
+    email: yup.string().required('Informe seu e-mail.').email('E-mail inválido.'),
+    senha: yup.string().required('Informe sua senha.'),
+    confirmar_senha: yup.string().required('confirme sua senha.'),
+})
+
 export function SignUp() {
 
 
-    const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>();
+    const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
+        resolver: yupResolver(signUpSchema)
+    });
 
     const navigation = useNavigation();
 
@@ -58,9 +69,6 @@ export function SignUp() {
                     <Controller
                         control={control}
                         name="name"
-                        rules={{
-                            required: 'Informe o nome.'
-                        }}
                         render={({ field: { onChange } }) => (
                             <Input
                                 placeholder='Nome'
@@ -73,13 +81,6 @@ export function SignUp() {
                     <Controller
                         control={control}
                         name="email"
-                        rules={{
-                            required: 'Infome o e-mail.',
-                            pattern: {
-                                value: /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+\.([a-z]+)?$/i,
-                                message: 'E-mail inválido'
-                            }
-                        }}
                         render={({ field: { onChange, value } }) => (
                             <Input
                                 placeholder='E-mail'
@@ -95,9 +96,6 @@ export function SignUp() {
                     <Controller
                         control={control}
                         name="senha"
-                        rules={{
-                            required: 'preencha o campo senha.'
-                        }}
                         render={({ field: { onChange, value } }) => (
                             <Input
                                 placeholder='Senha'
@@ -112,10 +110,6 @@ export function SignUp() {
                     <Controller
                         control={control}
                         name="confirmar_senha"
-                        rules={{
-                            required: 'preencha o campo confirmar senha.'
-
-                        }}
                         render={({ field: { onChange, value } }) => (
                             <Input
                                 placeholder='Confirmar senha'
