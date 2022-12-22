@@ -17,6 +17,8 @@ import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 
 import { AuthNavvigatorRoutesProps } from '@routes/auth.routes';
+import { useState } from 'react';
+import { useAuth } from '@hooks/useAuthe';
 
 
 type FormDataProps = {
@@ -34,6 +36,7 @@ const signUpSchema = yup.object({
 })
 
 export function SignUp() {
+    const [isLoading, setIsLoading] = useState(false);
 
     const toast = useToast();
 
@@ -43,15 +46,24 @@ export function SignUp() {
 
     const navigation = useNavigation();
 
+    const { signIn } = useAuth();
+
     function handleGoBack() {
         navigation.goBack();
     }
 
     async function handleSignUp({ name, email, password }: FormDataProps) {
         try {
-	        const response = await api.post('/users', {name, email, password });
-	        // console.log(response.data);
+            setIsLoading(true);
+
+	        await api.post('/users', {name, email, password });
+
+            await signIn(email, password);
+	        
         } catch (error) {
+
+            setIsLoading(false);
+
             const isAppError = error instanceof AppError;
             const title = isAppError ? error.message : 'Não foi possivel criar a conta. Tente novamente mais tarde.'
             toast.show({
@@ -146,6 +158,7 @@ export function SignUp() {
                     <Button
                         title='Criar e acessar'
                         onPress={handleSubmit(handleSignUp)}
+                        isLoading={isLoading}
                     />
                 </Center>
 
