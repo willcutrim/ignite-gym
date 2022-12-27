@@ -49,6 +49,8 @@ export function SignIn() {
                 bgColor: 'red.500'
             });
 
+        } finally{
+            setIsLoading(false);
         }
     }
 
